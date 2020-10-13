@@ -21,11 +21,11 @@ exports.checkValidity = async (req, res) => {
     try {
         let tolldata = await this.getToll(req.params.registrationNumber);
         if(tolldata.error) {
-            res.status(400).json({message:tolldata.error});
+            res.status(400).json({error:tolldata.error});
         }
         if(tolldata) {
             if(tolldata.journeyType === 'One Way') {
-                res.status(400).json({valid: false, message: 'The bill was issued for one way not for return'});
+                res.status(400).json({error: 'The bill was issued for one way not for return'});
             }
             let createdAt =  new Date(tolldata.createdAt);
             let currentTime  = Math.round(new Date().getTime() / 1000);
@@ -35,7 +35,7 @@ exports.checkValidity = async (req, res) => {
                 res.status(200).json({valid: true, message: 'The bill was generated within 24hrs'});
             }
             else {
-                res.status(200).json({valid: false, message: 'The bill is not valid after 24hrs'});
+                res.status(400).json({error: 'The bill is not valid after 24hrs'});
             }
         }
     } catch (err) {
